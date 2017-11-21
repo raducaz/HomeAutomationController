@@ -1,6 +1,7 @@
 package com.gmail.raducaz.myechoclient;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,13 +21,15 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 public class MainActivity extends Activity {
 
+    public static final String EXTRA_MESSAGE = "com.gmail.raducaz.myechoclient.MESSAGE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Button button = (Button)findViewById(R.id.btnSend);
-        button.setOnClickListener(new OnClickListener() {
+        final Button btnSend = (Button)findViewById(R.id.btnSend);
+        btnSend.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 final EditText txtMsg = (EditText)findViewById(R.id.txtMsg);
                 String msg = txtMsg.getText().toString();
@@ -36,8 +39,14 @@ public class MainActivity extends Activity {
                 txtMsg.setText("");
             }
         });
+    }
 
-
+    public void openActionActivity(View view) {
+        Intent intent = new Intent(this, ActionActivity.class);
+        EditText txtMsg = (EditText) findViewById(R.id.txtMsg);
+        String actionName = txtMsg.getText().toString();
+        intent.putExtra(EXTRA_MESSAGE, actionName);
+        startActivity(intent);
     }
 
 

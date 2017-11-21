@@ -1,3 +1,4 @@
+#include <ArduinoJson.h>
 #include <SPI.h>
 #include <Ethernet.h>
 
