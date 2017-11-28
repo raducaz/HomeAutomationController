@@ -4,10 +4,12 @@ package com.gmail.raducaz.arduinomate.ui;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.gmail.raducaz.arduinomate.R;
 import com.gmail.raducaz.arduinomate.model.Comment;
 import com.gmail.raducaz.arduinomate.model.Product;
+import com.gmail.raducaz.arduinomate.network.TcpClient;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -47,7 +49,10 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack("comment")
                 .replace(R.id.fragment_container,
                         commentFragment, null).commit();
+
+
     }
+
 }
 
 

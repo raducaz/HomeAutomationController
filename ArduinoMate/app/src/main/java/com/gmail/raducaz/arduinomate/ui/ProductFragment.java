@@ -1,7 +1,7 @@
 package com.gmail.raducaz.arduinomate.ui;
 
 
-import android.arch.lifecycle.LifecycleFragment;
+import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
@@ -17,9 +17,13 @@ import com.gmail.raducaz.arduinomate.databinding.ProductFragmentBinding;
 import com.gmail.raducaz.arduinomate.db.entity.CommentEntity;
 import com.gmail.raducaz.arduinomate.db.entity.ProductEntity;
 import com.gmail.raducaz.arduinomate.model.Comment;
+import com.gmail.raducaz.arduinomate.network.TcpClient;
 import com.gmail.raducaz.arduinomate.viewmodel.ProductViewModel;
 
 import java.util.List;
+
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 
 public class ProductFragment extends Fragment {
 
@@ -45,8 +49,19 @@ public class ProductFragment extends Fragment {
     private final CommentClickCallback mCommentClickCallback = new CommentClickCallback() {
         @Override
         public void onClick(Comment comment) {
-            // no-op
 
+            if(!comment.getText().equals("ProgressFct")) {
+
+                if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+                    ((MainActivity) getActivity()).show(comment);
+                }
+            }
+            else
+            {
+                // Start sending command to Arduino
+                TcpClient tcpClient = new TcpClient("","");
+                tcpClient.execute(new CommentChannelInboundHandler(comment));
+            }
         }
     };
 

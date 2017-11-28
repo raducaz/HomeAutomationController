@@ -67,7 +67,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public ProductViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ProductItemBinding binding = DataBindingUtil
                 .inflate(LayoutInflater.from(parent.getContext()), R.layout.product_item,
-                        parent, false);
+                parent, false);
         binding.setCallback(mProductClickCallback);
         return new ProductViewHolder(binding);
     }

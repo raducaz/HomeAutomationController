@@ -1,5 +1,6 @@
 package com.gmail.raducaz.arduinomate.ui;
 
+        import android.arch.lifecycle.Lifecycle;
         import android.arch.lifecycle.LifecycleFragment;
         import android.arch.lifecycle.Observer;
         import android.arch.lifecycle.ViewModelProviders;
@@ -9,16 +10,17 @@ package com.gmail.raducaz.arduinomate.ui;
         import android.support.v4.app.Fragment;
         import android.view.LayoutInflater;
         import android.view.View;
+        import android.view.View.OnClickListener;
         import android.view.ViewGroup;
+        import android.widget.Button;
 
         import com.gmail.raducaz.arduinomate.R;
+        import com.gmail.raducaz.arduinomate.databinding.CommentItemBinding;
         import com.gmail.raducaz.arduinomate.db.entity.CommentEntity;
-        import com.gmail.raducaz.arduinomate.db.entity.ProductEntity;
-        import com.gmail.raducaz.arduinomate.model.Comment;
         import com.gmail.raducaz.arduinomate.databinding.CommentFragmentBinding;
+        import com.gmail.raducaz.arduinomate.model.Comment;
+        import com.gmail.raducaz.arduinomate.network.TcpClient;
         import com.gmail.raducaz.arduinomate.viewmodel.CommentViewModel;
-
-        import java.util.List;
 
 public class CommentFragment extends Fragment {
 
@@ -31,14 +33,19 @@ public class CommentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         // Inflate this data binding layout
-                mBinding = DataBindingUtil.inflate(inflater, R.layout.product_fragment, container, false);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.comment_fragment, container, false);
 
-//        // Create and set the adapter for the RecyclerView.
-//        mCommentAdapter = new CommentAdapter(mCommentClickCallback);
-//        mBinding.commentList.setAdapter(mCommentAdapter);
+        //mBinding.setCallback2(mCommentClickCallback);
 
         return mBinding.getRoot();
     }
+
+    private final CommentClickCallback mCommentClickCallback = new CommentClickCallback() {
+        @Override
+        public void onClick(Comment comment) {
+
+        }
+    };
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -53,6 +60,15 @@ public class CommentFragment extends Fragment {
         mBinding.setCommentViewModel(model);
 
         subscribeToModel(model);
+
+        Button button = (Button) mBinding.getRoot().findViewById(R.id.btn_execute_function);
+        button.setOnClickListener(new OnClickListener() {
+            public void onClick(View b) {
+                Comment c = (Comment) b.getTag();
+            }
+        });
+
+
     }
 
     private void subscribeToModel(final CommentViewModel model) {
@@ -76,4 +92,5 @@ public class CommentFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
 }

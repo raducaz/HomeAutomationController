@@ -27,6 +27,7 @@ public class CommentEntity implements Comment {
     private int id;
     private int productId;
     private String text;
+    private String log;
     private Date postedAt;
 
     @Override
@@ -45,6 +46,15 @@ public class CommentEntity implements Comment {
 
     public void setProductId(int productId) {
         this.productId = productId;
+    }
+
+    @Override
+    public String getLog() {
+        return log;
+    }
+
+    public void setLog(String log) {
+        this.log = log;
     }
 
     @Override
@@ -68,10 +78,11 @@ public class CommentEntity implements Comment {
     public CommentEntity() {
     }
 
-    public CommentEntity(int id, int productId, String text, Date postedAt) {
+    public CommentEntity(int id, int productId, String text, String log, Date postedAt) {
         this.id = id;
         this.productId = productId;
         this.text = text;
+        this.log = log;
         this.postedAt = postedAt;
     }
 }

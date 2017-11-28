@@ -10,5 +10,7 @@ public interface Comment {
     int getId();
     int getProductId();
     String getText();
+    String getLog();
+    void setLog(String log);
     Date getPostedAt();
 }
