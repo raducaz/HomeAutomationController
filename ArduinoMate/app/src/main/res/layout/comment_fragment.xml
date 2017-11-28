@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="isLoading"
+            type="boolean" />
+
+        <variable
+            name="commentViewModel"
+            type="com.gmail.raducaz.arduinomate.viewmodel.CommentViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/cardview_light_background"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/comment_item"
+            app:product="@{commentViewModel.comment}"/>
+
+    </LinearLayout>
+</layout>
