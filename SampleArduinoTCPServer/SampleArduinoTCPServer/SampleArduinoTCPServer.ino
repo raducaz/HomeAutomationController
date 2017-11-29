@@ -18,6 +18,7 @@ void setup() {
 }
 
 void loop() {
+ 
   //Serial.println("START LOOP");
   EthernetClient client = server.available();
   //Serial.println("SERVER AVAIL");
@@ -37,8 +38,23 @@ void loop() {
         
         if (receivedChar==endChar)
         {
-          client.println("GOT:"+receivedText);
-          Serial.print("GOT:"+receivedText);
+          Serial.println("CMD:"+receivedText);
+          
+          if(receivedText == "StateFct")
+          {
+            client.println("Executing " + receivedText);
+            Serial.println("Executing " + receivedText);
+            delay(1000);
+            client.println(receivedText + "step 1");
+            Serial.println(receivedText + "step 1");
+            delay(1000);
+            client.println(receivedText + "step 2");
+            Serial.println(receivedText + "step 2");
+            delay(1000);
+            client.println("END");
+            Serial.println("END");
+          }
+          
           receivedText = "";
         }
         else
@@ -51,7 +67,7 @@ void loop() {
     Serial.println();
     Serial.println("CLOSE CONNECTION"); 
     client.stop();
-    delay(1);
+    delay(100);
     Serial.println("END LOOP");
 
   }
