@@ -50,7 +50,7 @@ public class ProductFragment extends Fragment {
         @Override
         public void onClick(Comment comment) {
 
-            if(!comment.getText().equals("ProgressFct")) {
+            if(comment.getText().equals("ProgressFct")) {
 
                 if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
                     ((MainActivity) getActivity()).show(comment);
@@ -59,8 +59,9 @@ public class ProductFragment extends Fragment {
             else
             {
                 // Start sending command to Arduino
-                TcpClient tcpClient = new TcpClient("","");
-                tcpClient.execute(new CommentChannelInboundHandler(comment));
+                ((MainActivity) getActivity()).tcpClient.stop();
+                ((MainActivity) getActivity()).tcpClient = new TcpClient("","");
+                ((MainActivity) getActivity()).tcpClient.execute(new CommentChannelInboundHandler(comment));
             }
         }
     };

@@ -35,17 +35,8 @@ public class CommentFragment extends Fragment {
         // Inflate this data binding layout
         mBinding = DataBindingUtil.inflate(inflater, R.layout.comment_fragment, container, false);
 
-        //mBinding.setCallback2(mCommentClickCallback);
-
         return mBinding.getRoot();
     }
-
-    private final CommentClickCallback mCommentClickCallback = new CommentClickCallback() {
-        @Override
-        public void onClick(Comment comment) {
-
-        }
-    };
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -64,7 +55,12 @@ public class CommentFragment extends Fragment {
         Button button = (Button) mBinding.getRoot().findViewById(R.id.btn_execute_function);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View b) {
-                Comment c = (Comment) b.getTag();
+                Comment comment = (Comment) b.getTag();
+
+                // Start sending command to Arduino
+                ((MainActivity) getActivity()).tcpClient.stop();
+                ((MainActivity) getActivity()).tcpClient = new TcpClient("","");
+                ((MainActivity) getActivity()).tcpClient.execute(new CommentChannelInboundHandler(comment));
             }
         });
 

@@ -25,31 +25,43 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 //AsyncTask<Params, Progress, Result>
 public class TcpClient extends AsyncTask<ChannelInboundHandlerAdapter, Void, Void> {
 
+    private static TcpClient sInstance;
+
     static final boolean SSL = System.getProperty("ssl") != null;
     static final String HOST = System.getProperty("host", "192.168.11.100");
     static final int PORT = Integer.parseInt(System.getProperty("port", "8080"));
     static final int SIZE = Integer.parseInt(System.getProperty("size", "256"));
 
-    public ChannelInboundHandlerAdapter channelInboundHandler;
+    private ChannelInboundHandlerAdapter channelInboundHandler;
+    EventLoopGroup group;
+    private boolean isTaskRunning;
 
     public TcpClient(String serverIp, String serverPort)
     {
+
         // TODO: Initialization parameters can be sent here
     }
-
+    public void stop()
+    {
+        if(isTaskRunning && channelInboundHandler != null)
+            ((CommentChannelInboundHandler) channelInboundHandler).forceClose();
+    }
     protected Void doInBackground(ChannelInboundHandlerAdapter... channelInboundHandlers) {
         if(channelInboundHandlers.length == 0) return null;
+
+        isTaskRunning = true;
+
         channelInboundHandler = channelInboundHandlers[0];
 
         // Configure the client.
-        EventLoopGroup group = new NioEventLoopGroup();
+        group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
             b.group(group)
                     .channel(NioSocketChannel.class)
-                    .option(ChannelOption.TCP_NODELAY, true)
+                    //.option(ChannelOption.TCP_NODELAY, true) // incompatible with autoread option
                     .option(ChannelOption.AUTO_READ, true)
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
                     .handler(new ChannelInitializer<SocketChannel>(){
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
@@ -75,6 +87,8 @@ public class TcpClient extends AsyncTask<ChannelInboundHandlerAdapter, Void, Voi
         finally {
             // Shut down the event loop to terminate all threads.
             group.shutdownGracefully();
+
+            isTaskRunning = false;
 
             return null;
         }

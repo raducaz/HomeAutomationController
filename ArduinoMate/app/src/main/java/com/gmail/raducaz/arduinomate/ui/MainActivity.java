@@ -12,6 +12,9 @@ import com.gmail.raducaz.arduinomate.model.Product;
 import com.gmail.raducaz.arduinomate.network.TcpClient;
 
 public class MainActivity extends AppCompatActivity {
+
+    public TcpClient tcpClient = new TcpClient("", "");
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
