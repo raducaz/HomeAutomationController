@@ -23,6 +23,7 @@ void setup() {
 
    delay(1000);
 
+/*
    Serial.println("connecting...");
 
    if (client.connect(serverip, 9090)) {
@@ -32,6 +33,7 @@ void setup() {
    } else {
      Serial.println("connection failed");
    }
+   */
 }
 
 int increment=0;
@@ -39,8 +41,12 @@ char endChar = '\n';
 char receivedChar;
 String receivedText = "";
 
-void loop() {
-  if (client.available()) {
+String ReceiveMsgFromServer()
+{
+  char endChar = '\n';
+  String receivedText = "";
+  
+  while (client.available()) {
      char receivedChar = client.read();
      Serial.print(receivedChar);
 
@@ -50,9 +56,8 @@ void loop() {
 
       // Reset the line received
       receivedText = "";
-
       Serial.println("END");
-      client.stop();
+      break;
     }
     else
     {
@@ -60,23 +65,56 @@ void loop() {
     } 
    }
 
-   if (!client.connected()) {
-     Serial.println();
-     Serial.println("disconnecting.");
-     client.stop();
+   return receivedText;
+}
+boolean ConnectToServer()
+{
+  client.stop();
+  delay(1000);
+  
+  if (client.connect(serverip, 9090)) {
+    return client.connected();
+  }
 
-     delay(1000);
-     Serial.println("reconnecting...");
-
-     if (client.connect(serverip, 9090)) {
-       if(client.connected())
-       {
-          increment++;
-         Serial.println("connected");
-         client.println(increment);
-       }
-     } else {
-       Serial.println("connection failed");
-     }
+  return false;
+}
+boolean SendMsgToServer(String msg)
+{
+  if(client.connected())
+   {
+       client.println(msg);
+       // Success
+       return true;
    }
+   else
+   {
+      // Retry once
+      if(ConnectToServer())
+      {
+        client.println(msg);
+        // Success
+        return true;
+      }
+      else
+      {
+        // Failed
+        return false;
+      }
+   }
+}
+
+void loop() {
+  
+  Serial.println(ReceiveMsgFromServer());
+  increment++;
+  if(SendMsgToServer(String(increment)))
+  {
+    Serial.println("Sent to server");
+  }
+  else
+  {
+    Serial.println("Fail Sent to server");
+    }
+
+  delay(1000);
 }
