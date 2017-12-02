@@ -18,6 +18,7 @@ import java.util.List;
 
 public class ProductViewModel extends AndroidViewModel {
 
+    private DataRepository dataRepository;
     private final LiveData<ProductEntity> mObservableProduct;
 
     public ObservableField<ProductEntity> product = new ObservableField<>();
@@ -29,6 +30,8 @@ public class ProductViewModel extends AndroidViewModel {
     public ProductViewModel(@NonNull Application application, DataRepository repository,
                             final int productId) {
         super(application);
+        this.dataRepository = repository;
+
         mProductId = productId;
 
         mObservableComments = repository.loadComments(mProductId);
@@ -48,6 +51,22 @@ public class ProductViewModel extends AndroidViewModel {
 
     public void setProduct(ProductEntity product) {
         this.product.set(product);
+    }
+
+    public void insertProduct()
+    {
+        ProductEntity p = new ProductEntity();
+        p.setId(2);
+        p.setName("Test inser");
+        p.setDescription("Test description");
+        dataRepository.insertProduct(p);
+    }
+
+    public void updateProduct()
+    {
+        ProductEntity p = mObservableProduct.getValue();
+        p.setDescription("Test update desc");
+        dataRepository.updateProduct(p);
     }
 
     /**

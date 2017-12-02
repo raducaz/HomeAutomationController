@@ -60,12 +60,14 @@ public class MyNettyEchoClient extends AsyncTask<Activity, Void, Void> {
             Bootstrap b = new Bootstrap();
             b.group(group)
                     .channel(NioSocketChannel.class)
-                    .option(ChannelOption.TCP_NODELAY, true)
+                    //.option(ChannelOption.TCP_NODELAY, true)
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+                    .option(ChannelOption.AUTO_READ, true)
                     .handler(new ChannelInitializer<SocketChannel>(){
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline p = ch.pipeline();
-                            p.addLast("readTimeoutHandler", new ReadTimeoutHandler(5));
+                            //p.addLast("readTimeoutHandler", new ReadTimeoutHandler(5));
                             p.addLast(new MyNettyEchoClientHandler(sentMsg, activity[0]));
                         }
                     });

@@ -9,5 +9,6 @@ public interface Product {
     int getId();
     String getName();
     String getDescription();
+    void setDescription(String description);
     int getPrice();
 }

@@ -1,0 +1,4 @@
+https://www.survivingwithandroid.com/2015/06/internet-of-things-with-android-and-arduino.html
+
+-- Using WIFI module
+http://allaboutee.com/2015/01/20/esp8266-android-application-for-arduino-pin-control/

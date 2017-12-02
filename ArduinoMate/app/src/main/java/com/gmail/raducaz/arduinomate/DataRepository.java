@@ -56,6 +56,15 @@ public class DataRepository {
     public LiveData<ProductEntity> loadProduct(final int productId) {
         return mDatabase.productDao().loadProduct(productId);
     }
+    public ProductEntity loadProductSync(final int productId) {
+        return mDatabase.productDao().loadProductSync(productId);
+    }
+    public void insertProduct(ProductEntity product) {
+        mDatabase.productDao().insert(product);
+    }
+    public void updateProduct(ProductEntity product) {
+        mDatabase.productDao().update(product);
+    }
 
     public LiveData<List<CommentEntity>> loadComments(final int productId) {
         return mDatabase.commentDao().loadComments(productId);
@@ -63,5 +72,8 @@ public class DataRepository {
 
     public LiveData<CommentEntity> loadComment(final int commentId) {
         return mDatabase.commentDao().loadComment(commentId);
+    }
+    public void updateComment(CommentEntity comment) {
+        mDatabase.commentDao().update(comment);
     }
 }

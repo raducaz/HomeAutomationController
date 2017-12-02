@@ -1,0 +1,4 @@
+See Tejas Lagvankar's post about this subject. Below are some key differences between Service and IntentService and other components.
+
+enter image description here
+

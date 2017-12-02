@@ -25,6 +25,7 @@ public class MyNettyEchoClientHandler extends ChannelInboundHandlerAdapter {
 
     private String sentMsg;
     private final Activity activity;
+    private boolean isENDReceived;
 
     /**
      * Creates a client-side handler.
@@ -49,6 +50,9 @@ public class MyNettyEchoClientHandler extends ChannelInboundHandlerAdapter {
         ByteBuf in = (ByteBuf) msg;
         final String sMsg = in.toString(io.netty.util.CharsetUtil.US_ASCII);
 
+        if(sMsg.equals("END"))
+            isENDReceived = true;
+
         DisplayMessage("\nRECEIVED:" + sMsg);
 
         // Don't want to confirm to server that client received the message
@@ -59,7 +63,14 @@ public class MyNettyEchoClientHandler extends ChannelInboundHandlerAdapter {
     public void channelReadComplete(ChannelHandlerContext ctx) {
         // Don't want to confirm to server that client received the message - nothing to flush
         //ctx.flush();
-        ctx.close();
+
+        if(isENDReceived) {
+            ctx.close();
+            DisplayMessage("Channel close.");
+        }
+//        else {
+//            DisplayMessage("Continue reading...");
+//        }
     }
 
     @Override

@@ -18,6 +18,7 @@ import java.util.List;
 
 public class CommentViewModel extends AndroidViewModel {
 
+    private DataRepository dataRepository;
     private final LiveData<CommentEntity> mObservableComment;
 
     public ObservableField<CommentEntity> comment = new ObservableField<>();
@@ -30,7 +31,7 @@ public class CommentViewModel extends AndroidViewModel {
                             final int commentId) {
         super(application);
         mCommentId = commentId;
-
+        dataRepository = repository;
 //        mObservableComments = repository.loadComments(mProductId);
 
         mObservableComment = repository.loadComment(mCommentId);
@@ -51,6 +52,10 @@ public class CommentViewModel extends AndroidViewModel {
         this.comment.set(comment);
     }
 
+    public void updateComment(CommentEntity comment)
+    {
+        dataRepository.updateComment(comment);
+    }
     /**
      * A creator is used to inject the comment ID into the ViewModel
      * <p>

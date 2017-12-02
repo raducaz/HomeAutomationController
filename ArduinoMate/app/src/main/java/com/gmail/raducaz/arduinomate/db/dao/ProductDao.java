@@ -9,6 +9,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import com.gmail.raducaz.arduinomate.db.entity.ProductEntity;
 
@@ -16,6 +17,12 @@ import java.util.List;
 
 @Dao
 public interface ProductDao {
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    void update(ProductEntity product);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(ProductEntity product);
+
     @Query("SELECT * FROM products")
     LiveData<List<ProductEntity>> loadAllProducts();
 

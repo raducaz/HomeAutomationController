@@ -16,14 +16,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.gmail.raducaz.arduinomate.R;
 import com.gmail.raducaz.arduinomate.Utils;
 import com.gmail.raducaz.arduinomate.model.Comment;
 import com.gmail.raducaz.arduinomate.model.Product;
-import com.gmail.raducaz.arduinomate.network.TcpClient;
-import com.gmail.raducaz.arduinomate.network.TcpServerService;
+import com.gmail.raducaz.arduinomate.service.TcpServerIntentService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int CONNECTION_ACTION 				= 100;
 
     private static final String TAG = "ArduinoMateMainActivity";
-
-    public TcpClient tcpClient = new TcpClient("", "");
 
     /** Messenger for communicating with Tcp Server Service. */
     Messenger mService_ = null;
@@ -88,6 +84,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void startTcpServerService(Comment comment)
+    {
+        // Construct our Intent specifying the Service
+        Intent i = new Intent(this, TcpServerIntentService.class);
+        // Add extras to the bundle
+        i.putExtra("foo", "bar");
+        // Start the service
+        startService(i);
+    }
 
     /**
      * Target we publish for clients to send messages to IncomingHandler.
@@ -103,24 +108,24 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Log.d(TAG, "USBActivity handleMessage: " + msg.what);
                 switch (msg.what) {
-                    case TcpServerService.MSG_SEND_ASCII_TO_CLIENT:
+                    case TcpServerIntentService.MSG_SEND_ASCII_TO_CLIENT:
                         Bundle b = msg.getData();
-                        CharSequence asciiMessage = b.getCharSequence(TcpServerService.MSG_KEY);
+                        CharSequence asciiMessage = b.getCharSequence(TcpServerIntentService.MSG_KEY);
                         logMessage("USBActivity handleMessage: TO_CLIENT " + asciiMessage);
                         showMessage(asciiMessage);
                         break;
-                    case TcpServerService.MSG_SEND_BYTES_TO_CLIENT:
+                    case TcpServerIntentService.MSG_SEND_BYTES_TO_CLIENT:
                         Bundle bb = msg.getData();
-                        byte[] data = bb.getByteArray(TcpServerService.MSG_KEY);
+                        byte[] data = bb.getByteArray(TcpServerIntentService.MSG_KEY);
                         signalToUi(BYTE_SEQUENCE_TYPE, data);
                         break;
-                    case TcpServerService.MSG_SEND_ASCII_TO_SERVER:
+                    case TcpServerIntentService.MSG_SEND_ASCII_TO_SERVER:
                         Bundle sb = msg.getData();
-                        CharSequence sAsciiMessage = sb.getCharSequence(TcpServerService.MSG_KEY);
+                        CharSequence sAsciiMessage = sb.getCharSequence(TcpServerIntentService.MSG_KEY);
                         Log.d(TAG, "USBActivity handleMessage: TO_SERVER " + sAsciiMessage);
                         showMessage(sAsciiMessage);
                         break;
-                    case TcpServerService.MSG_SEND_EXIT_TO_CLIENT:
+                    case TcpServerIntentService.MSG_SEND_EXIT_TO_CLIENT:
                         try {
                             if (debug_) showMessage("on Exit Signal\n");
                         } catch (Exception e) {
@@ -156,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
             // connected to it.
             try {
                 Message msg = Message.obtain(null,
-                        TcpServerService.MSG_REGISTER_CLIENT);
+                        TcpServerIntentService.MSG_REGISTER_CLIENT);
                 msg.replyTo = mMessenger_;
                 mService_.send(msg);
 
@@ -181,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
         // class name because there is no reason to be able to let other
         // applications replace our component.
         bindService(new Intent(this,
-                TcpServerService.class), mConnection, Context.BIND_AUTO_CREATE);
+                TcpServerIntentService.class), mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
         logMessage("Bound.");
     }
@@ -193,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
             if (mService_ != null) {
                 try {
                     Message msg = Message.obtain(null,
-                            TcpServerService.MSG_UNREGISTER_CLIENT);
+                            TcpServerIntentService.MSG_UNREGISTER_CLIENT);
                     msg.replyTo = mMessenger_;
                     mService_.send(msg);
                 } catch (RemoteException e) {
@@ -270,12 +275,12 @@ public class MainActivity extends AppCompatActivity {
 
         doUnbindService();
 
-        Intent stopServiceIntent = new Intent(this, TcpServerService.class);
+        Intent stopServiceIntent = new Intent(this, TcpServerIntentService.class);
         this.stopService(stopServiceIntent);
 
         SystemClock.sleep(1500);
 
-        Intent startServiceIntent = new Intent(this, TcpServerService.class);
+        Intent startServiceIntent = new Intent(this, TcpServerIntentService.class);
         startService(startServiceIntent);
 
         SystemClock.sleep(1500);

@@ -1,4 +1,4 @@
-package com.gmail.raducaz.arduinomate.network;
+package com.gmail.raducaz.arduinomate.service;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -34,10 +34,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.SelfSignedCertificate;
 
-public class TcpServerService extends IntentService {
+public class TcpServerIntentService extends IntentService {
 
     private String TAG = "ArduinoTcpServerService";
     private static final int NOTIFICATION_ID = 123;
@@ -59,15 +57,15 @@ public class TcpServerService extends IntentService {
     private TcpClientIncomingHandler tcpClientIncomingHandler;
 
     /* Constructor */
-    public TcpServerService() {
-        super("TcpServerService");
+    public TcpServerIntentService() {
+        super("TcpServerIntentService");
     }
 
     /* Start service and start Tcp Server - Entry point !! */
     @Override
     protected void onHandleIntent(Intent arg0) {
 
-        Log.d(TAG, "onHandleIntent entered, starting Intent TcpServerService");
+        Log.d(TAG, "onHandleIntent entered, starting Intent TcpServerIntentService");
 
         startForeground(NOTIFICATION_ID, getNotification());
 
@@ -203,10 +201,10 @@ public class TcpServerService extends IntentService {
      */
     public void sendStringToUIClients(String message) {
         try {
-            Message msg = Message.obtain(null, TcpServerService.MSG_SEND_ASCII_TO_CLIENT, message);
+            Message msg = Message.obtain(null, TcpServerIntentService.MSG_SEND_ASCII_TO_CLIENT, message);
 
             Bundle b = new Bundle();
-            b.putCharSequence(TcpServerService.MSG_KEY, message);
+            b.putCharSequence(TcpServerIntentService.MSG_KEY, message);
             msg.setData(b);
             msg.replyTo = mMessenger_;
             mMessenger_.send(msg);
@@ -240,7 +238,7 @@ public class TcpServerService extends IntentService {
     public Message createByteMessage(byte[] data, int msgWhat)
     {
         Bundle b = new Bundle();
-        b.putByteArray(TcpServerService.MSG_KEY, data);
+        b.putByteArray(TcpServerIntentService.MSG_KEY, data);
 
         Message msg = Message.obtain(null, msgWhat);
         msg.setData(b);
@@ -260,7 +258,7 @@ public class TcpServerService extends IntentService {
     public Message createStringMessage(String message, int msgWhat)
     {
         Bundle b = new Bundle();
-        b.putCharSequence(TcpServerService.MSG_KEY, message);
+        b.putCharSequence(TcpServerIntentService.MSG_KEY, message);
 
         Message msg = Message.obtain(null, msgWhat);
         msg.setData(b);
@@ -310,7 +308,7 @@ public class TcpServerService extends IntentService {
                 String msgText = null;
                 byte[] msgData = new byte[0];
 
-                Object msgDataObject = msgBundle.get(TcpServerService.MSG_KEY);
+                Object msgDataObject = msgBundle.get(TcpServerIntentService.MSG_KEY);
                 if(msgDataObject != null) {
                     if (msgDataObject.getClass() == String.class)
                         msgText = (String) msgDataObject;

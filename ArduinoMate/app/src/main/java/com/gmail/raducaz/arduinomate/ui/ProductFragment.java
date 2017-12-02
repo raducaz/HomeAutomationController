@@ -10,20 +10,24 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import com.gmail.raducaz.arduinomate.ArduinoMateApp;
+import com.gmail.raducaz.arduinomate.DataRepository;
 import com.gmail.raducaz.arduinomate.R;
 import com.gmail.raducaz.arduinomate.databinding.ProductFragmentBinding;
 import com.gmail.raducaz.arduinomate.db.entity.CommentEntity;
 import com.gmail.raducaz.arduinomate.db.entity.ProductEntity;
 import com.gmail.raducaz.arduinomate.model.Comment;
-import com.gmail.raducaz.arduinomate.network.TcpClient;
+import com.gmail.raducaz.arduinomate.service.CommentChannelClientInboundHandler;
+import com.gmail.raducaz.arduinomate.service.TcpClientService;
 import com.gmail.raducaz.arduinomate.viewmodel.ProductViewModel;
 
+import java.io.IOException;
 import java.util.List;
-
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import java.util.concurrent.Executor;
 
 public class ProductFragment extends Fragment {
 
@@ -43,6 +47,7 @@ public class ProductFragment extends Fragment {
         // Create and set the adapter for the RecyclerView.
         mCommentAdapter = new CommentAdapter(mCommentClickCallback);
         mBinding.commentList.setAdapter(mCommentAdapter);
+
         return mBinding.getRoot();
     }
 
@@ -56,12 +61,18 @@ public class ProductFragment extends Fragment {
                     ((MainActivity) getActivity()).show(comment);
                 }
             }
-            else
-            {
+            else {
                 // Start sending command to Arduino
-                ((MainActivity) getActivity()).tcpClient.stop();
-                ((MainActivity) getActivity()).tcpClient = new TcpClient("","");
-                ((MainActivity) getActivity()).tcpClient.execute(new CommentChannelInboundHandler(comment));
+                DataRepository repository = ((ArduinoMateApp) getActivity().getApplication()).getRepository();
+                Executor executor = ((ArduinoMateApp) getActivity().getApplication()).getNetworkExecutor();
+
+                try {
+                    executor.execute(new TcpClientService("", "",
+                            new CommentChannelClientInboundHandler((CommentEntity) comment, repository)
+                    ));
+                } catch (IOException exc) {
+                    //TODO: do something here
+                }
             }
         }
     };
@@ -77,6 +88,18 @@ public class ProductFragment extends Fragment {
                 .get(ProductViewModel.class);
 
         mBinding.setProductViewModel(model);
+
+        // Test Live Data
+        Button button = (Button) mBinding.getRoot().findViewById(R.id.btn_test);
+        button.setOnClickListener(new OnClickListener() {
+            public void onClick(View b)
+            {
+                ((ArduinoMateApp)getActivity().getApplication()).getDbExecutor().execute(() -> {
+                    model.updateProduct();
+                });
+            }
+        });
+        // Test Live Data
 
         subscribeToModel(model);
     }

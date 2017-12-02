@@ -1,7 +1,5 @@
 package com.gmail.raducaz.arduinomate.ui;
 
-        import android.arch.lifecycle.Lifecycle;
-        import android.arch.lifecycle.LifecycleFragment;
         import android.arch.lifecycle.Observer;
         import android.arch.lifecycle.ViewModelProviders;
         import android.databinding.DataBindingUtil;
@@ -15,11 +13,9 @@ package com.gmail.raducaz.arduinomate.ui;
         import android.widget.Button;
 
         import com.gmail.raducaz.arduinomate.R;
-        import com.gmail.raducaz.arduinomate.databinding.CommentItemBinding;
         import com.gmail.raducaz.arduinomate.db.entity.CommentEntity;
         import com.gmail.raducaz.arduinomate.databinding.CommentFragmentBinding;
         import com.gmail.raducaz.arduinomate.model.Comment;
-        import com.gmail.raducaz.arduinomate.network.TcpClient;
         import com.gmail.raducaz.arduinomate.viewmodel.CommentViewModel;
 
 public class CommentFragment extends Fragment {
@@ -58,9 +54,13 @@ public class CommentFragment extends Fragment {
                 Comment comment = (Comment) b.getTag();
 
                 // Start sending command to Arduino
-                ((MainActivity) getActivity()).tcpClient.stop();
-                ((MainActivity) getActivity()).tcpClient = new TcpClient("","");
-                ((MainActivity) getActivity()).tcpClient.execute(new CommentChannelInboundHandler(comment));
+//                DataRepository repository = ((ArduinoMateApp) getActivity().getApplication()).getRepository();
+//                ((ArduinoMateApp) getActivity().getApplication())
+//                ((MainActivity) getActivity()).tcpClient.stop();
+//                ((MainActivity) getActivity()).tcpClient = new TcpClientService("","");
+//                ((MainActivity) getActivity()).tcpClient.execute(
+//                        new CommentChannelClientInboundHandler((CommentEntity) comment, repository)
+//                );
             }
         });
 
